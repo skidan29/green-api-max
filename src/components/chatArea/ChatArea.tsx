@@ -1,3 +1,3 @@
-import { Main } from './ChatArea.styles'
+import { StyledMain } from './ChatArea.styles'
 
-export const ChatArea = () => <Main>Chat</Main>
+export const ChatArea = () => <StyledMain>Chat</StyledMain>

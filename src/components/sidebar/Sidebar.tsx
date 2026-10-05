@@ -11,6 +11,7 @@ export const Sidebar = () => {
     <StyledAside>
       <Menu />
       <StyledContainer>
+        <h1>Чаты</h1>
         <Input
           placeholder="Введите номер"
           value={phone}
