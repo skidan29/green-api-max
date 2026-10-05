@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { StyledAside, StyledContainer } from './Sidebar.styles'
 import { Menu } from './components/Menu'
-import { Input } from '../../shared/components/ui/input/Input'
+import { Input } from '@shared/components/ui'
 
 export const Sidebar = () => {
   const [phone, setPhone] = useState('')

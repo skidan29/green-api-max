@@ -1,4 +1,4 @@
-import { ExitIcon } from '../../../shared/components/icons'
+import { ExitIcon } from '@shared/components/icons'
 import { StyledMenu } from './Menu.styles'
 
 export const Menu = () => (

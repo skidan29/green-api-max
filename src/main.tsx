@@ -1,14 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Chat } from './pages/Chat/Chat'
+import { Auth } from './pages/Auth/Auth'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<Chat />} />
+        <Route path="/login" element={<Auth />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

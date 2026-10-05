@@ -16,6 +16,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Path aliases (must match vite.config.ts) */
+    "paths": {
+      "@shared/components/ui": ["./src/shared/components/ui"],
+      "@shared/components/icons": ["./src/shared/components/icons"]
+    },
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
