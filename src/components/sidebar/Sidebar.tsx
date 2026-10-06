@@ -17,7 +17,7 @@ export const Sidebar = () => {
     fetch(`${API_URL}/waInstance${idInstance}/checkAccount/${tokenInstance}`, {
       method: 'POST',
       body: JSON.stringify({
-        phoneNumber: 79954133565,
+        phoneNumber: phone,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export const Sidebar = () => {
       method: 'POST',
       body: JSON.stringify({
         chatId: id,
-        message: 'Я использую GREEN-API для отправки этого сообщения!',
+        message: 'Я использую GREEN-API для отправки этого сообщения! NEW',
       }), // данные могут быть 'строкой' или {объектом}!
       headers: {
         'Content-Type': 'application/json',
