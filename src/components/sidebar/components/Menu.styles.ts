@@ -10,3 +10,12 @@ export const StyledMenu = styled.menu`
   padding: 16px 8px;
   row-gap: 16px;
 `
+export const StyledButton = styled.button`
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+`

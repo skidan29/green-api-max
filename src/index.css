@@ -5,6 +5,7 @@
   --border: #e5e4e7;
   --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
   --font: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --white: #ffffff;
 }
 
 body {
