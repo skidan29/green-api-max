@@ -7,8 +7,15 @@ interface Props {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
   type?: string
+  minLength?: number
 }
 
-export const Input = ({ value, onChange, placeholder, type }: Props) => (
-  <InputStyle value={value} onChange={onChange} placeholder={placeholder} type={type} />
+export const Input = ({ value, onChange, placeholder, type, minLength }: Props) => (
+  <InputStyle
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    type={type}
+    minLength={minLength}
+  />
 )

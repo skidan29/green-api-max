@@ -20,4 +20,8 @@ export const StyledButton = styled.button`
   text-align: center;
   margin-top: 100px;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+  }
 `
