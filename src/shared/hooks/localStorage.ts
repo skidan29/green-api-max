@@ -1,3 +1,4 @@
 export const LocalStorage = {
-  InstanceInfo: 'instance-info'
+  InstanceInfo: 'instance-info',
+  Chats: 'chats',
 } as const
