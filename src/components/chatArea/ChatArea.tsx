@@ -1,11 +1,12 @@
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { API_URL } from '../../shared/constans'
 import { LocalStorage, useLocalStorage } from '../../shared/hooks'
 import { StyledMain } from './ChatArea.styles'
 import { useParams } from 'react-router-dom'
+import type { Instance } from '../../shared/types'
 
 export const ChatArea = () => {
-  const [instance] = useLocalStorage(LocalStorage.InstanceInfo)
+  const [instance] = useLocalStorage<Instance>(LocalStorage.InstanceInfo)
   const { chatId } = useParams<{ chatId: string }>()
   const [messageText, setMessageText] = useState('')
 
@@ -28,15 +29,18 @@ export const ChatArea = () => {
 
   const getMessage = () => {
     if (!instance) return
-    const { idInstance, tokenInstance } = instance as { idInstance: string; tokenInstance: string }
-    console.log(idInstance, tokenInstance)
+    const { idInstance, tokenInstance } = instance
+
     fetch(`${API_URL}/waInstance${idInstance}/receiveNotification/${tokenInstance}`, {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-      // .then((data) => data.json())
+      .then((res) => res.json())
       .then((messge) => {
-        console.log(messge)
-        // delNotify(messge.receiptId)
+        console.log(messge, messge.receiptId)
+        delNotify(messge.receiptId)
       })
   }
 
@@ -49,9 +53,9 @@ export const ChatArea = () => {
     }).then((data) => console.log(data))
   }
 
-  // useEffect(() => {
-  //   getMessage()
-  // }, [])
+  useEffect(() => {
+    getMessage()
+  }, [])
 
   return (
     <StyledMain>
