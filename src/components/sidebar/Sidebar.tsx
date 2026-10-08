@@ -10,7 +10,7 @@ import {
 import { Menu } from './components/Menu'
 import { Input } from '@shared/components/ui'
 import { LocalStorage, useLocalStorage } from '../../shared/hooks'
-import { API_URL } from '../../shared/constans'
+import { checkAccount } from '../../api'
 import type { ChatInfo, ChatInfoWithPhone, Instance } from '../../shared/types'
 import { useNavigate } from 'react-router-dom'
 import { DeleteIcon } from '@shared/components/icons'
@@ -37,28 +37,18 @@ export const Sidebar = () => {
 
   const getChatIdByPhone = () => {
     if (!instance) return
-    const { idInstance, tokenInstance } = instance as { idInstance: string; tokenInstance: string }
+    const { idInstance, tokenInstance } = instance
     console.log(idInstance, tokenInstance)
-    fetch(`${API_URL}/waInstance${idInstance}/checkAccount/${tokenInstance}`, {
-      method: 'POST',
-      body: JSON.stringify({
-        phoneNumber: Number(phone),
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((chatInfo: ChatInfo) => {
-        const { chatId } = chatInfo
+    checkAccount(instance, phone).then((chatInfo: ChatInfo) => {
+      const { chatId } = chatInfo
 
-        if (chatInfo && chatId) {
-          const chatInfoWithPhone: ChatInfoWithPhone = { ...chatInfo, phoneNumber: Number(phone) }
-          addChat(chatInfoWithPhone)
-          setPhone('')
-          navigate(`/${chatId}`)
-        }
-      })
+      if (chatInfo && chatId) {
+        const chatInfoWithPhone: ChatInfoWithPhone = { ...chatInfo, phoneNumber: Number(phone) }
+        addChat(chatInfoWithPhone)
+        setPhone('')
+        navigate(`/${chatId}`)
+      }
+    })
   }
 
   return (

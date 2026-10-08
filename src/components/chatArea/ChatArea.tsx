@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { API_URL } from '../../shared/constans'
+import { deleteNotification, receiveNotification, sendMessage as sendMessageAPI } from '../../api'
 import { LocalStorage, useLocalStorage } from '../../shared/hooks'
 import {
   MessageContainer,
@@ -31,20 +31,11 @@ export const ChatArea = () => {
   const navigate = useNavigate()
 
   const sendMessage = () => {
-    if (!(messageText && chatId)) return
+    if (!(messageText && chatId && instance)) return
 
-    const { idInstance, tokenInstance } = instance as { idInstance: string; tokenInstance: string }
+    const { idInstance, tokenInstance } = instance
     console.log(idInstance, tokenInstance)
-    fetch(`${API_URL}/waInstance${idInstance}/sendMessage/${tokenInstance}`, {
-      method: 'POST',
-      body: JSON.stringify({
-        chatId,
-        message: messageText,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(() => setMessageText(''))
+    sendMessageAPI(instance, chatId, messageText).then(() => setMessageText(''))
   }
 
   const removeNotification = useCallback(
@@ -55,9 +46,7 @@ export const ChatArea = () => {
         tokenInstance: string
       }
       console.log(idInstance, tokenInstance)
-      fetch(`${API_URL}/waInstance${idInstance}/deleteNotification/${tokenInstance}/${receiptId}`, {
-        method: 'DELETE',
-      }).then((data) => console.log(data))
+      deleteNotification(instance, receiptId).then((data) => console.log(data))
     },
     [instance]
   )
@@ -74,40 +63,32 @@ export const ChatArea = () => {
 
   const getNotification = useCallback(() => {
     if (!instance) return
-    const { idInstance, tokenInstance } = instance
 
-    fetch(`${API_URL}/waInstance${idInstance}/receiveNotification/${tokenInstance}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    receiveNotification(instance).then((message: ReceiveNotification | null) => {
+      const messageBody = message?.body
+      const receiptId = message?.receiptId
+      if (receiptId) {
+        removeNotification(receiptId)
+      }
+
+      if (
+        !(
+          messageBody &&
+          (messageBody.typeWebhook === 'incomingMessageReceived' ||
+            messageBody.typeWebhook === 'outgoingAPIMessageReceived')
+        )
+      ) {
+        return
+      }
+
+      const simplifiedMessage: SimplifiedMessage = {
+        timestamp: messageBody.timestamp,
+        type: messageBody.typeWebhook,
+        text: extractTextFromMessageData(messageBody.messageData),
+      }
+
+      setMessages((prev) => [...prev, simplifiedMessage])
     })
-      .then((res) => res.json())
-      .then((message: ReceiveNotification) => {
-        const messageBody = message?.body
-        const receiptId = message?.receiptId
-        if (receiptId) {
-          removeNotification(receiptId)
-        }
-
-        if (
-          !(
-            messageBody &&
-            (messageBody.typeWebhook === 'incomingMessageReceived' ||
-              messageBody.typeWebhook === 'outgoingAPIMessageReceived')
-          )
-        ) {
-          return
-        }
-
-        const simplifiedMessage: SimplifiedMessage = {
-          timestamp: messageBody.timestamp,
-          type: messageBody.typeWebhook,
-          text: extractTextFromMessageData(messageBody.messageData),
-        }
-
-        setMessages((prev) => [...prev, simplifiedMessage])
-      })
   }, [extractTextFromMessageData, instance, removeNotification])
 
   useEffect(() => {
