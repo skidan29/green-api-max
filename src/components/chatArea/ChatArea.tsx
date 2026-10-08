@@ -1,8 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
 import { API_URL } from '../../shared/constans'
 import { LocalStorage, useLocalStorage } from '../../shared/hooks'
-import { StyledMain } from './ChatArea.styles'
-import { useParams } from 'react-router-dom'
+import {
+  MessageContainer,
+  NoContentText,
+  ScrollContainer,
+  SendButton,
+  StyledContainer,
+  StyledHeader,
+  StyledInputMessage,
+  StyledMain,
+  StyledMessage,
+  StyledTextarea,
+} from './ChatArea.styles'
+import { useNavigate, useParams } from 'react-router-dom'
 import type {
   ExtendedTextMessageData,
   Instance,
@@ -10,12 +21,14 @@ import type {
   SimplifiedMessage,
   TextMessageData,
 } from '../../shared/types'
+import { ArrowBack, ArrowUpward } from '@shared/components/icons'
 
 export const ChatArea = () => {
   const [instance] = useLocalStorage<Instance>(LocalStorage.InstanceInfo)
   const { chatId } = useParams<{ chatId: string }>()
   const [messageText, setMessageText] = useState('')
   const [messages, setMessages] = useState<SimplifiedMessage[]>([])
+  const navigate = useNavigate()
 
   const sendMessage = () => {
     if (!(messageText && chatId)) return
@@ -88,6 +101,7 @@ export const ChatArea = () => {
         }
 
         const simplifiedMessage: SimplifiedMessage = {
+          timestamp: messageBody.timestamp,
           type: messageBody.typeWebhook,
           text: extractTextFromMessageData(messageBody.messageData),
         }
@@ -98,10 +112,13 @@ export const ChatArea = () => {
 
   useEffect(() => {
     let interval = null
-
-    if (chatId) {
-      interval = setInterval(getNotification, 5000)
+    if (interval) {
+      clearInterval(interval)
     }
+
+    if (!chatId) return
+
+    interval = setInterval(getNotification, 5000)
 
     return () => {
       if (interval) {
@@ -110,21 +127,62 @@ export const ChatArea = () => {
     }
   }, [chatId, getNotification])
 
+  const closeСhat = useCallback(() => {
+    navigate('/')
+  }, [navigate])
+
+  const getDate = useCallback((ms: number): string => {
+    const date = new Date(ms)
+    return date?.toLocaleTimeString('ru-RU')
+  }, [])
+
   return (
     <StyledMain>
       {chatId && (
-        <div>
-          <input
-            value={messageText}
-            onChange={(e) => {
-              setMessageText(e.target.value)
-            }}
-          />
-          <button type="button" onClick={sendMessage}>
-            Send
+        <StyledHeader>
+          <button onClick={closeСhat}>
+            <ArrowBack />
           </button>
-          {messages && messages.map((message) => <div>{message.text}</div>)}
-        </div>
+          <h2>Чат {chatId}</h2>
+        </StyledHeader>
+      )}
+
+      {chatId ? (
+        <>
+          <ScrollContainer>
+            <StyledContainer>
+              <MessageContainer>
+                {messages?.length ? (
+                  messages?.map((message) => (
+                    <StyledMessage $isOutgoing={message.type === 'outgoingAPIMessageReceived'}>
+                      {message.text}
+                      <time>{getDate(message.timestamp)}</time>
+                    </StyledMessage>
+                  ))
+                ) : (
+                  <NoContentText>Сообщений пока нет</NoContentText>
+                )}
+              </MessageContainer>
+            </StyledContainer>
+          </ScrollContainer>
+
+          <StyledContainer>
+            <StyledInputMessage>
+              <StyledTextarea
+                placeholder="Сообщение"
+                value={messageText}
+                onChange={(e) => {
+                  setMessageText(e.target.value)
+                }}
+              />
+              <SendButton type="button" onClick={sendMessage}>
+                <ArrowUpward />
+              </SendButton>
+            </StyledInputMessage>
+          </StyledContainer>
+        </>
+      ) : (
+        <NoContentText>Создайте новый чат или выберите существующий</NoContentText>
       )}
     </StyledMain>
   )

@@ -36,6 +36,7 @@ export interface ExtendedTextMessageData {
 export interface SimplifiedMessage {
   type: 'incomingMessageReceived' | 'outgoingAPIMessageReceived'
   text: string
+  timestamp: number
 }
 
 export interface SenderData {
