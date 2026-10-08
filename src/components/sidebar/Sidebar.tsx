@@ -1,12 +1,19 @@
 import { useCallback, useState } from 'react'
 
-import { StyledAside, StyledContainer } from './Sidebar.styles'
+import {
+  StyledAside,
+  StyledButton,
+  StyledChatItem,
+  StyledContainer,
+  StyledDelete,
+} from './Sidebar.styles'
 import { Menu } from './components/Menu'
 import { Input } from '@shared/components/ui'
 import { LocalStorage, useLocalStorage } from '../../shared/hooks'
 import { API_URL } from '../../shared/constans'
 import type { ChatInfo, ChatInfoWithPhone, Instance } from '../../shared/types'
 import { useNavigate } from 'react-router-dom'
+import { DeleteIcon } from '@shared/components/icons'
 
 export const Sidebar = () => {
   const [phone, setPhone] = useState('')
@@ -62,22 +69,30 @@ export const Sidebar = () => {
         <Input
           placeholder="Введите номер"
           value={phone}
+          type="phone"
+          minLength={11}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <button type="button" onClick={getChatIdByPhone} disabled={!(instance && phone)}>
-          Создать чат
-        </button>
+        <StyledButton type="button" onClick={getChatIdByPhone} disabled={!(phone?.length > 10)}>
+          Создать новый чат
+        </StyledButton>
         {chats &&
           chats.map((chat) => (
-            <div
+            <StyledChatItem
               key={chat.chatId}
               onClick={() => {
                 navigate(`/${chat.chatId}`)
               }}
             >
-              {chat.phoneNumber}: {chat.chatId}
-              <button onClick={deleteChat(chat.chatId)}>del</button>
-            </div>
+              <div>
+                <div>Номер телефона: {chat.phoneNumber}</div>
+                <span>Идентификатор чата: {chat.chatId}</span>
+              </div>
+
+              <StyledDelete onClick={deleteChat(chat.chatId)}>
+                <DeleteIcon />
+              </StyledDelete>
+            </StyledChatItem>
           ))}
       </StyledContainer>
     </StyledAside>

@@ -10,6 +10,7 @@
 
 body {
   margin: 0;
+  font-family: Arial;
 }
 
 * {
@@ -20,7 +21,6 @@ body {
 
 h1 {
   font-size: 24px;
-  font-family: Arial;
   font-weight: 600;
   color: var(--text-h);
   margin-bottom: 16px;
