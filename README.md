@@ -1,75 +1,90 @@
-# React + TypeScript + Vite
+# Green API Max
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-мессенджер, работающий через [GREEN-API](https://green-api.com/) — сервис, позволяющий отправлять и получать сообщения WhatsApp, используя `idInstance` и `tokenInstance` вашего инстанса.
 
-Currently, two official plugins are available:
+## Возможности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 🔐 **Авторизация по инстансу** — вход по `idInstance` и `tokenInstance` (данные сохраняются в `localStorage`)
+- 💬 **Создание чатов** — ввод номера телефона в формате `7XXXXXXXXXX` для создания нового чата (номер проверяется через API)
+- 📨 **Отправка сообщений** — отправка текстовых сообщений в выбранный чат
+- 📥 **Получение сообщений** — автоматический опрос сервера (`receiveNotification`) каждые 5 секунд для получения входящих и исходящих сообщений
+- 📑 **История чатов** — список ранее созданных чатов сохраняется в `localStorage` и доступен при следующем входе
+- ➖ **Удаление чатов** — удаление чата из списка си сохранением истории в `localStorage`
 
-## React Compiler
+## Технологии
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Технология | Назначение |
+| --- | --- |
+| [React 19](https://react.dev/) | UI библиотека |
+| [TypeScript](https://www.typescriptlang.org/) | Типизация |
+| [Vite](https://vite.dev/) | Сборка и dev-сервер |
+| [React Router 7](https://reactrouter.com/) | Маршрутизация |
+| [styled-components](https://styled-components.com/) | Стилизация компонентов |
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Структура проекта
 
 ```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+src/
+├── api/                    # Работа с GREEN-API (checkAccount, sendMessage, receiveNotification, deleteNotification)
+├── components/
+│   ├── authForm/          # Форма входа (idInstance и tokenInstance)
+│   ├── chatArea/          # Область чата (сообщения, отправка, получение）
+│   └── sidebar/           # Боковая панель (список чатов, создание нового）
+├── pages/
+│   ├── Auth/              # Страница авторизации
+│   └── Chat/              # Страница чата
+├── shared/
+│   ├── components/        # UI-компоненты（ Input, icons）
+│   ├── hooks/             # useLocalStorage и ключи localStorage
+│   ├── types/             # Типы Green API и сущностей приложения
+│   └── constans.ts        # Базовый URL Green API
+└── main.tsx                # Точка входа (маршруты⌘
 ```
+
+## Предварительные требования
+
+- **Node.js 20+** и **npm** (или другой пакетный менеджер： yarn, pnpm）
+- Аккаунт в [GREEN-API](https://green-api.com/)（дашборд: https://console.green-api.com/）
+
+### Как получить `idInstance` и `tokenInstance`
+
+1. Зарегистрируйтесь на [console.green-api.com](https://console.green-api.com/)
+2. Создайте новый инстанс (кнопка "Создать инстанс")
+3. Скопируйте **ID инстанса** (`idInstance`) и **API-токен** (`tokenInstance`) из карточки инстанса
+4. Вставьте их в форму входа приложения
+
+> ⚠️ Данные инстанса хранятся локально в браузере (`localStorage`) и никуда не отправляются, кроме запросов к GREEN-API.
+
+## Запуск проекта
+
+```bash
+# 1. Установите зависимости
+npm install
+
+# 2. Запустите dev-сервер
+npm run dev
+```
+
+Приложение будет доступно по адресу [http://localhost:5173](http://localhost:5173).
+
+## Сборка и проверки
+
+```bash
+# Проверка типов и продакшн-сборка (результат в dist/)
+npm run build
+
+# Предпросмотр продакшн-сборки локально
+npm run preview
+
+# Линтинг кода
+npm run lint
+```
+
+## Скрипты
+
+| Команда | Описание |
+| --- | --- |
+| `npm run dev` | Запуск dev-сервера с HMR |
+| `npm run build` | Проверка TypeScript + сборка в `dist/` |
+| `npm run lint` | Проверка кода ESLint |
+| `npm run preview` | Локальный предпросмотр собранного приложения |
